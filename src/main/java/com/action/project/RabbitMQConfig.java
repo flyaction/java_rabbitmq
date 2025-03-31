@@ -1,16 +1,20 @@
 package com.action.project;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
+import org.springframework.amqp.support.ConsumerTagStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.UUID;
 
 /**
  * @author: action
@@ -105,6 +109,31 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         return rabbitTemplate;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer messageContainer(ConnectionFactory connectionFactory){
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+        container.setQueues(queue001(),queue002(),queue003(),queue_image(),queue_pdf());
+        container.setConcurrentConsumers(1);
+        container.setMaxConcurrentConsumers(5);
+        container.setDefaultRequeueRejected(false);
+        container.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        container.setExposeListenerChannel(true);
+        container.setConsumerTagStrategy(new ConsumerTagStrategy() {
+            @Override
+            public String createConsumerTag(String queue) {
+                return queue + "_" + UUID.randomUUID().toString();
+            }
+        });
+        container.setMessageListener(new ChannelAwareMessageListener(){
+            @Override
+            public void onMessage(Message message, Channel channel) throws Exception {
+                String msg = new String(message.getBody());
+                System.out.println("message:"+msg);
+            }
+        });
+        return container;
     }
 
 }
