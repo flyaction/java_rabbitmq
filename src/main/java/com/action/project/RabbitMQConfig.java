@@ -1,5 +1,7 @@
 package com.action.project;
 
+import com.action.project.adapter.MessageDelegate;
+import com.action.project.convert.TextMessageConverter;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -14,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -126,13 +130,37 @@ public class RabbitMQConfig {
                 return queue + "_" + UUID.randomUUID().toString();
             }
         });
-        container.setMessageListener(new ChannelAwareMessageListener(){
-            @Override
-            public void onMessage(Message message, Channel channel) throws Exception {
-                String msg = new String(message.getBody());
-                System.out.println("message:"+msg);
-            }
-        });
+//        container.setMessageListener(new ChannelAwareMessageListener(){
+//            @Override
+//            public void onMessage(Message message, Channel channel) throws Exception {
+//                String msg = new String(message.getBody());
+//                System.out.println("message:"+msg);
+//            }
+//        });
+
+        /**
+         * 1、适配器方式，默认是有自己的方法名字的:handleMessage
+         * 可以自己指定一个方法名字: consumeMessage
+         * 可以添加一个转换器，从字节数组转换为String
+         */
+//        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
+//        adapter.setDefaultListenerMethod("consumeMessage");
+//        adapter.setMessageConverter(new TextMessageConverter());
+//        container.setMessageListener(adapter);
+
+        /**
+         * 2、适配器方式，我们的队列名称和方法名称 也可以进行一一匹配
+         */
+        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
+
+        adapter.setMessageConverter(new TextMessageConverter());
+        Map<String,String> queueOrTagToMethodName = new HashMap<>();
+        queueOrTagToMethodName.put("queue001","method1");
+        queueOrTagToMethodName.put("queue002","method2");
+        adapter.setQueueOrTagToMethodName(queueOrTagToMethodName);
+
+        container.setMessageListener(adapter);
+
         return container;
     }
 

@@ -77,4 +77,13 @@ class ApplicationTests {
 
 	}
 
+	@Test
+	public void testSendMessage4Text() throws Exception{
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setContentType("text/plain");
+		Message message = new Message("mq RabbitMQ...testSendMessage2".getBytes(),messageProperties);
+		rabbitTemplate.send("topic001","spring.abc",message);
+		rabbitTemplate.send("topic002","rabbit.abc",message);
+	}
+
 }
