@@ -1,5 +1,8 @@
 package com.action.project;
 
+import com.action.project.entity.Order;
+import com.action.project.entity.Packaged;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.*;
@@ -85,5 +88,48 @@ class ApplicationTests {
 		rabbitTemplate.send("topic001","spring.abc",message);
 		rabbitTemplate.send("topic002","rabbit.abc",message);
 	}
+
+	@Test
+	public void testSendJavaMessage() throws Exception{
+		Order order = new Order("100001","nihao","nihao,this is a message");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(order);
+		System.out.println("order 4 json:"+json);
+
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setContentType("application/json");
+		messageProperties.getHeaders().put("__TypeId__","com.action.project.entity.Order");
+		Message message = new Message(json.getBytes(),messageProperties);
+		rabbitTemplate.send("topic001","spring.order",message);
+	}
+
+	@Test
+	public void testSendMapMessage() throws Exception{
+		Order order = new Order("100001","nihao","nihao,this is a message");
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(order);
+		System.out.println("order 4 json:"+json);
+
+		MessageProperties messageProperties1 = new MessageProperties();
+		messageProperties1.setContentType("application/json");
+		messageProperties1.getHeaders().put("__TypeId__","order");
+		Message message1 = new Message(json.getBytes(),messageProperties1);
+		rabbitTemplate.send("topic001","spring.order",message1);
+
+		Packaged packaged = new Packaged("100002","nihao","nihao,this is a message");
+		String json2 = mapper.writeValueAsString(packaged);
+		System.out.println("packaged 4 json:"+json2);
+
+		MessageProperties messageProperties2 = new MessageProperties();
+		messageProperties2.setContentType("application/json");
+		messageProperties2.getHeaders().put("__TypeId__","packaged");
+
+
+		Message message2 = new Message(json2.getBytes(),messageProperties2);
+		rabbitTemplate.send("topic001","spring.pack",message2);
+	}
+
+
+
 
 }
