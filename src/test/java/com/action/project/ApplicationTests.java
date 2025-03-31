@@ -40,6 +40,7 @@ class ApplicationTests {
 
 		//清空队列
 		rabbitAdmin.purgeQueue("test.direct.queue",false);
+
 	}
 
 }
