@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author: action
  * @create: 2025/3/31 16:38
  **/
-public class ImageMessageConverter implements MessageConverter {
+public class PDFMessageConverter implements MessageConverter {
     @Override
     public Message toMessage(Object object, MessageProperties messageProperties) throws MessageConversionException {
         throw new MessageConversionException("convert error");
@@ -22,12 +22,10 @@ public class ImageMessageConverter implements MessageConverter {
 
     @Override
     public Object fromMessage(Message message) throws MessageConversionException {
-        System.out.println("------Image MessageConverter------");
-        Object _extName = message.getMessageProperties().getHeaders().get("extName");
-        String extName = _extName == null ? "png" : _extName.toString();
+        System.out.println("------PDFMessageConverter------");
         byte[] body = message.getBody();
         String fileName = UUID.randomUUID().toString();
-        String path = "/Users/action/code/study_java/java_rabbitmq/files/" + fileName + "." + extName;
+        String path = "/Users/action/code/study_java/java_rabbitmq/rabbitmq-api/files" + fileName + ".pdf";
         File f = new File(path);
         try {
           Files.copy(new ByteArrayInputStream(body),f.toPath());

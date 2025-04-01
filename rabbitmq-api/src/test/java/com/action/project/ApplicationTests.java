@@ -135,7 +135,7 @@ class ApplicationTests {
 
 	@Test
 	public void testSendExtConverterMessage() throws Exception{
-		byte[] body = Files.readAllBytes(Paths.get("/Users/action/code/study_java/java_rabbitmq/files","logo.png"));
+		byte[] body = Files.readAllBytes(Paths.get("/Users/action/code/study_java/java_rabbitmq/rabbitmq-api/files","logo.png"));
 		MessageProperties messageProperties = new MessageProperties();
 		messageProperties.setContentType("image/png");
 		messageProperties.getHeaders().put("extName","png");
