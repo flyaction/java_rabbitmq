@@ -1,6 +1,7 @@
-package com.action.producer;
+package com.action.demo;
 
-import com.action.producer.producer.RabbitSender;
+import com.action.demo.entity.Order;
+import com.action.demo.producer.RabbitSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,5 +29,10 @@ class ProducerApplicationTests {
 		properties.put("number", 12345);
 		properties.put("send_time", simpleDateFormat.format(new Date()));
 		rabbitSender.send("Hello RabbitMQ For Spring Boot.", properties);
+	}
+
+	@Test
+	public void testSend2() throws Exception {
+		rabbitSender.sendOrder(new Order("123456", "RabbitMQ 订单消息"));
 	}
 }

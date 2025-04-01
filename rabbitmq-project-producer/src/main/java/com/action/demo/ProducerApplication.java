@@ -1,4 +1,4 @@
-package com.action.producer;
+package com.action.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

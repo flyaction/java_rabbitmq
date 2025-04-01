@@ -1,12 +1,13 @@
-package com.action.producer.producer;
+package com.action.demo.producer;
 
-import com.rabbitmq.client.ReturnCallback;
+import com.action.demo.entity.Order;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
@@ -48,5 +49,13 @@ public class RabbitSender {
         //id + 时间戳全局唯一
         CorrelationData correlationData = new CorrelationData("1234567890");
         rabbitTemplate.convertAndSend("exchange-1", "springboot.hello", msg,correlationData);
+    }
+
+    public void sendOrder(Order order) throws Exception {
+        rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnsCallback(returnsCallback);
+        //id + 时间戳全局唯一
+        CorrelationData correlationData = new CorrelationData("0987654321");
+        rabbitTemplate.convertAndSend("exchange-2", "springboot.def", order,correlationData);
     }
 }
