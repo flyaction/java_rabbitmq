@@ -25,7 +25,7 @@ public class PDFMessageConverter implements MessageConverter {
         System.out.println("------PDFMessageConverter------");
         byte[] body = message.getBody();
         String fileName = UUID.randomUUID().toString();
-        String path = "/Users/action/code/study_java/java_rabbitmq/" + fileName + ".pdf";
+        String path = "/Users/action/code/study_java/java_rabbitmq/files" + fileName + ".pdf";
         File f = new File(path);
         try {
           Files.copy(new ByteArrayInputStream(body),f.toPath());

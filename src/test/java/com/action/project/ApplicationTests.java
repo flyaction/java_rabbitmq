@@ -11,6 +11,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @SpringBootTest
 class ApplicationTests {
 
@@ -129,6 +132,16 @@ class ApplicationTests {
 		rabbitTemplate.send("topic001","spring.pack",message2);
 	}
 
+
+	@Test
+	public void testSendExtConverterMessage() throws Exception{
+		byte[] body = Files.readAllBytes(Paths.get("/Users/action/code/study_java/java_rabbitmq/files","logo.png"));
+		MessageProperties messageProperties = new MessageProperties();
+		messageProperties.setContentType("image/png");
+		messageProperties.getHeaders().put("extName","png");
+		Message message = new Message(body,messageProperties);
+		rabbitTemplate.send("","image_queue",message);
+	}
 
 
 
